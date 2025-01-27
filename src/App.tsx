@@ -1,35 +1,43 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import React from "react";
+import { Layout, Menu } from "antd";
+import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
+import Dashboard from "./pages/Dashboard";
+import Containers from "./pages/Containers";
+import Images from "./pages/Images";
 
-function App() {
-  const [count, setCount] = useState(0)
+const { Header, Content, Footer, Sider } = Layout;
 
-  return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
-}
+const App: React.FC = () => {
+    return (
+        <Router>
+            <Layout style={{ minHeight: "100vh" }}>
+                <Sider>
+                    <Menu theme="dark" mode="inline">
+                        <Menu.Item key="1">
+                            <Link to="/">Dashboard</Link>
+                        </Menu.Item>
+                        <Menu.Item key="2">
+                            <Link to="/containers">Containers</Link>
+                        </Menu.Item>
+                        <Menu.Item key="3">
+                            <Link to="/images">Images</Link>
+                        </Menu.Item>
+                    </Menu>
+                </Sider>
+                <Layout>
+                    <Header style={{ background: "#fff", padding: 0 }} />
+                    <Content style={{ margin: "16px" }}>
+                        <Routes>
+                            <Route path="/" element={<Dashboard />} />
+                            <Route path="/containers" element={<Containers />} />
+                            <Route path="/images" element={<Images />} />
+                        </Routes>
+                    </Content>
+                    <Footer style={{ textAlign: "center" }}>Docker Admin ©2025</Footer>
+                </Layout>
+            </Layout>
+        </Router>
+    );
+};
 
-export default App
+export default App;
