@@ -1,30 +1,21 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Table, Button, message } from "antd";
-import { fetchContainers, startContainer, removeContainer } from "../api/apiClient";
+import { fetchContainers, removeContainer } from "../api/apiClient";
 
 const Containers: React.FC = () => {
     const [containers, setContainers] = useState([]);
 
-    useEffect(() => {
-        loadContainers();
-    }, []);
-
     const loadContainers = async () => {
         try {
-            const { data } = await fetchContainers(true);
-            setContainers(data);
+            const { data } = await fetchContainers(true); // Получаем данные с параметром `all=true`
+            const formattedContainers = data.map((container: any) => ({
+                id: container.Id,
+                image: container.Image,
+                state: container.State,
+            }));
+            setContainers(formattedContainers);
         } catch (err) {
             message.error("Failed to fetch containers");
-        }
-    };
-
-    const handleStart = async (id: string) => {
-        try {
-            await startContainer(id);
-            message.success("Container started");
-            loadContainers();
-        } catch (err) {
-            message.error("Failed to start container");
         }
     };
 
@@ -38,18 +29,33 @@ const Containers: React.FC = () => {
         }
     };
 
+    useEffect(() => {
+        loadContainers();
+    }, []);
+
     const columns = [
-        { title: "ID", dataIndex: "id", key: "id" },
-        { title: "Name", dataIndex: "name", key: "name" },
-        { title: "State", dataIndex: "state", key: "state" },
+        {
+            title: "ID",
+            dataIndex: "id",
+            key: "id",
+        },
+        {
+            title: "Image",
+            dataIndex: "image",
+            key: "image",
+        },
+        {
+            title: "State",
+            dataIndex: "state",
+            key: "state",
+        },
         {
             title: "Actions",
             key: "actions",
             render: (_: any, record: any) => (
-                <>
-                    <Button onClick={() => handleStart(record.id)}>Start</Button>
-                    <Button danger onClick={() => handleRemove(record.id)}>Remove</Button>
-                </>
+                <Button danger onClick={() => handleRemove(record.id)}>
+                    Delete
+                </Button>
             ),
         },
     ];
