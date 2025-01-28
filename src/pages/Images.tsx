@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { Table, Button, message } from "antd";
-import { fetchImages, removeImage } from "../api/apiClient";
+import { Table, Button, message, Modal } from "antd";
+import { fetchImages, removeImage, inspectImage } from "../api/apiClient";
 
 const Images: React.FC = () => {
     const [images, setImages] = useState([]);
+    const [isModalVisible, setIsModalVisible] = useState(false);
+    const [modalData, setModalData] = useState<any>(null); // JSON-данные образа
 
     const loadImages = async () => {
         try {
@@ -28,6 +30,16 @@ const Images: React.FC = () => {
         }
     };
 
+    const handleInspect = async (id: string) => {
+        try {
+            const { data } = await inspectImage(id);
+            setModalData(data);
+            setIsModalVisible(true);
+        } catch (err) {
+            message.error("Failed to inspect image");
+        }
+    };
+
     useEffect(() => {
         loadImages();
     }, []);
@@ -42,6 +54,11 @@ const Images: React.FC = () => {
             title: "RepoTag",
             dataIndex: "repoTag",
             key: "repoTag",
+            render: (text: string, record: any) => (
+                <a onClick={() => handleInspect(record.id)} style={{ cursor: "pointer", color: "#1890ff" }}>
+                    {text}
+                </a>
+            ),
         },
         {
             title: "Actions",
@@ -54,7 +71,27 @@ const Images: React.FC = () => {
         },
     ];
 
-    return <Table dataSource={images} columns={columns} rowKey="id" />;
+    return (
+        <>
+            <Table dataSource={images} columns={columns} rowKey="id" />
+
+            <Modal
+                title="Inspect Image"
+                open={isModalVisible}
+                onCancel={() => setIsModalVisible(false)}
+                footer={null}
+                width={800}
+            >
+                {modalData ? (
+                    <pre style={{ maxHeight: "400px", overflow: "auto", background: "#f5f5f5", padding: "10px" }}>
+            {JSON.stringify(modalData, null, 2)}
+          </pre>
+                ) : (
+                    "Loading..."
+                )}
+            </Modal>
+        </>
+    );
 };
 
 export default Images;
