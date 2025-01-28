@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const apiClient = axios.create({
-    baseURL: "http://localhost:8080/docker/local", // Замените на ваш URL
+    baseURL: "/api/docker/local", // Замените на ваш URL
     headers: {
         "Content-Type": "application/json",
     },
