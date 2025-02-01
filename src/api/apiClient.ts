@@ -1,49 +1,63 @@
 import axios from "axios";
 
-const apiClient = axios.create({
-    baseURL: "/api/docker/local",
+const apiClientContainer = axios.create({
+    baseURL: "/api/docker/container/local",
+    headers: {
+        "Content-Type": "application/json",
+    },
+});
+
+// const apiClientClient = axios.create({
+//     baseURL: "/api/docker/client/local",
+//     headers: {
+//         "Content-Type": "application/json",
+//     },
+// });
+
+const apiClientImage = axios.create({
+    baseURL: "/api/docker/image/local",
     headers: {
         "Content-Type": "application/json",
     },
 });
 
 export const fetchContainers = (all: boolean) =>
-    apiClient.get(`/container/listOfContainers?all=${all}`);
+    apiClientContainer.get(`/listOfContainers?all=${all}`);
 
-export const fetchImages = () => apiClient.get("/image/listOfImages");
+export const fetchImages = () => apiClientImage.get("/listOfImages");
 
 export const inspectImage = (id: string) =>
-    apiClient.get(`/image/inspectImage?id=${id}`);
+    apiClientImage.get(`/inspectImage?id=${id}`);
 
 export const startContainer = (id: string) =>
-    apiClient.post(`/container/startContainer?id=${id}`);
+    apiClientContainer.post(`/startContainer?id=${id}`);
 
 export const removeContainer = (id: string, force: boolean) =>
-    apiClient.delete(`/container/removeContainer?id=${id}&force=${force}`);
+    apiClientContainer.delete(`/removeContainer?id=${id}&force=${force}`);
 
 export const removeImage = (id: string) =>
-    apiClient.delete(`/container/removeImage?id=${id}`);
+    apiClientImage.delete(`/removeImage?id=${id}`);
 
 export const stopContainer = (id: string) =>
-    apiClient.post(`/container/stopContainer?id=${id}`);
+    apiClientContainer.post(`/stopContainer?id=${id}`);
 
 export const restartContainer = (id: string) =>
-    apiClient.post(`/container/restartContainer?id=${id}`);
+    apiClientContainer.post(`/restartContainer?id=${id}`);
 
 export const killContainer = (id: string) =>
-    apiClient.delete(`/container/killContainer?id=${id}`);
+    apiClientContainer.delete(`/killContainer?id=${id}`);
 
 export const renameContainer = (id: string, name: string) =>
-    apiClient.post(`/container/renameContainer?id=${id}&name=${name}`);
+    apiClientContainer.post(`/renameContainer?id=${id}&name=${name}`);
 
 export const inspectContainer = (id: string) =>
-    apiClient.get(`/container/inspectContainer?id=${id}`);
+    apiClientContainer.get(`/inspectContainer?id=${id}`);
 
 export const diffContainer = (id: string) =>
-    apiClient.get(`/container/diffContainer?id=${id}`);
+    apiClientContainer.get(`/diffContainer?id=${id}`);
 
 export const statsContainer = (id: string) =>
-    apiClient.get(`/client/stats?id=${id}`, { responseType: "stream" });
+    apiClientContainer.get(`/stats?id=${id}`, { responseType: "stream" });
 
 export const streamLogsContainer = async (
     id: string,
@@ -58,7 +72,7 @@ export const streamLogsContainer = async (
         params.append("tail", String(tail));
     }
 
-    const response = await fetch(`/api/docker/local/container/logContainer?${params.toString()}`, {
+    const response = await fetch(`/api/docker/container/local/logContainer?${params.toString()}`, {
         method: "GET",
         headers: {
             "Accept": "application/x-ndjson",
@@ -95,8 +109,8 @@ export const streamLogsContainer = async (
     }
 };
 
-export const createContainer = (configId: string, data: any) =>
-    apiClient.post(`/${configId}/container/createContainer`, data);
+export const createContainer = (data: any) =>
+    apiClientContainer.post(`/createContainer`, data);
 
 export const topContainer = (id: string) =>
-    apiClient.get(`/container/topContainer?id=${id}`);
+    apiClientContainer.get(`/topContainer?id=${id}`);
